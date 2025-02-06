@@ -32,7 +32,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    return await this.authService.login(user.email, user.id);
+    return await this.authService.login(user);
   }
 
   @Post('register')
@@ -63,6 +63,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    return await this.authService.getTokens(user.email, user.id);
+    const { email, id, role } = user;
+    return await this.authService.getTokens(email, id, role);
   }
 }

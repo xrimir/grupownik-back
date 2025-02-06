@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -27,15 +27,21 @@ export class AuthService {
     return isPasswordValid ? user : null;
   }
 
-  async login(email: string, userId: string): Promise<TokenPayload> {
-    return await this.getTokens(email, userId);
+  async login(user: User): Promise<TokenPayload> {
+    const { email, id, role } = user;
+    return await this.getTokens(email, id, role);
   }
 
-  async getTokens(email: string, userId: string): Promise<TokenPayload> {
+  async getTokens(
+    email: string,
+    userId: string,
+    role: Role,
+  ): Promise<TokenPayload> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
+          role,
           email,
         },
         {
@@ -46,6 +52,7 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           sub: userId,
+          role,
           email,
         },
         {
