@@ -21,6 +21,9 @@ export class CreatePostDto {
 }
 
 export class UpdatePostDto {
+  @IsUUID()
+  id: string;
+
   @IsOptional()
   @IsString()
   @MaxLength(255)
@@ -33,6 +36,11 @@ export class UpdatePostDto {
   @IsOptional()
   @IsBoolean()
   published?: boolean;
+}
+
+export class DeletePostDto {
+  @IsUUID()
+  id: string;
 }
 
 export class PostResponseDto {

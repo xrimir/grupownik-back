@@ -6,6 +6,8 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import * as process from 'node:process';
+import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import * as process from 'node:process';
       signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRE_DATE },
     }),
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,10 +8,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PostModule } from './post/post.module';
-import { AssetModule } from './asset/asset.module';
-import { ProfileController } from './profile/profile.controller';
-import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { AssetModule } from './asset/asset.module';
 
 @Module({
   imports: [
@@ -24,11 +24,14 @@ import { ProfileModule } from './profile/profile.module';
         limit: 10,
       },
     ]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static'),
+    }),
     PostModule,
     AssetModule,
     ProfileModule,
   ],
-  controllers: [AppController, ProfileController],
-  providers: [AppService, ProfileService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

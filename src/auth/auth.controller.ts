@@ -1,12 +1,13 @@
 import {
+  Get,
   Body,
   Post,
   Req,
   UseGuards,
   Controller,
+  ConflictException,
   UnauthorizedException,
   InternalServerErrorException,
-  ConflictException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/LoginDto';
@@ -15,6 +16,7 @@ import { UserService } from '../user/user.service';
 import { CustomRequest } from '../types';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +43,7 @@ export class AuthController {
 
     const existingUser = await this.userService.findOne(email);
 
-    if (!existingUser) {
+    if (existingUser) {
       throw new ConflictException('User already exists');
     }
 
@@ -55,7 +57,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshAuthGuard)
-  @Post('refresh')
+  @Get('refresh')
   async refresh(@Req() req: CustomRequest) {
     const { user } = req;
 
@@ -65,5 +67,12 @@ export class AuthController {
 
     const { email, id, role } = user;
     return await this.authService.getTokens(email, id, role);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('verify')
+  verify(@Req() req: CustomRequest) {
+    const { user } = req;
+    return { success: !!user };
   }
 }
